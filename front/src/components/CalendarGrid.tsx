@@ -13,17 +13,16 @@ import {
 } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import DayCell from './DayCell'
-import type { RoomData } from '@/lib/storage'
 import { formatDateKey } from '@/lib/utils'
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react'
 
 interface CalendarGridProps {
-  room: RoomData
+  dates: Record<string, string[]>
 }
 
 const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
 
-export default function CalendarGrid({ room }: CalendarGridProps) {
+export default function CalendarGrid({ dates }: CalendarGridProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
   const days = useMemo(() => {
@@ -82,7 +81,7 @@ export default function CalendarGrid({ room }: CalendarGridProps) {
         <div className="grid grid-cols-7 gap-1.5 md:gap-2">
           {days.map((day) => {
             const key = formatDateKey(day)
-            const users = room.entries[key] ?? []
+            const users = dates[key] ?? []
             return (
               <DayCell
                 key={key}

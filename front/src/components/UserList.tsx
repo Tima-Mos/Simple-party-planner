@@ -1,15 +1,15 @@
 import { useMemo } from 'react'
-import type { RoomData } from '@/lib/storage'
 import { Users, Crown } from 'lucide-react'
 
 interface UserListProps {
-  room: RoomData
+  totalUsers: string[]
+  dates: Record<string, string[]>
 }
 
-export default function UserList({ room }: UserListProps) {
+export default function UserList({ totalUsers, dates }: UserListProps) {
   const stats = useMemo(() => {
     const map: Record<string, number> = {}
-    for (const users of Object.values(room.entries)) {
+    for (const users of Object.values(dates)) {
       for (const u of users) {
         map[u] = (map[u] ?? 0) + 1
       }
@@ -17,7 +17,7 @@ export default function UserList({ room }: UserListProps) {
     return Object.entries(map)
       .sort((a, b) => b[1] - a[1])
       .map(([name, count]) => ({ name, count }))
-  }, [room.entries])
+  }, [dates])
 
   if (stats.length === 0) {
     return (

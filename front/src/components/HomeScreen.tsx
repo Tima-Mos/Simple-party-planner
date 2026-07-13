@@ -4,22 +4,22 @@ import { useRoom } from '@/store/RoomContext'
 import { Copy, Plus, DoorOpen, ScrollText } from 'lucide-react'
 
 export default function HomeScreen() {
-  const { nickname, setNickname, createRoom } = useRoom()
+  const { nickname, setNickname, createRoom, loading, error } = useRoom()
   const [inputNick, setInputNick] = useState(nickname)
-  const [roomName, setRoomName] = useState('')
   const [createdLink, setCreatedLink] = useState('')
   const [copied, setCopied] = useState(false)
   const navigate = useNavigate()
 
-  const handleCreateRoom = (e: FormEvent) => {
+  const handleCreateRoom = async (e: FormEvent) => {
     e.preventDefault()
     if (inputNick.trim().length < 2) return
-    if (!roomName.trim()) return
 
-    setNickname(inputNick.trim())
-    const id = createRoom(roomName.trim())
-    const link = `${window.location.origin}/room/${id}`
-    setCreatedLink(link)
+    const nick = inputNick.trim()
+    try {
+      const id = await createRoom(nick)
+      const link = `${window.location.origin}/room/${id}`
+      setCreatedLink(link)
+    } catch {}
   }
 
   const handleCopyLink = async () => {
@@ -78,6 +78,12 @@ export default function HomeScreen() {
           ) : (
             /* Form */
             <form onSubmit={handleCreateRoom} className="space-y-5">
+              {error && (
+                <div className="p-3 rounded-lg bg-red-900/20 border border-red-800/40 text-red-300 text-sm">
+                  {error}
+                </div>
+              )}
+
               <div>
                 <label className="block font-[Cinzel] text-sm font-semibold text-wood-700 mb-1.5 uppercase tracking-wider">
                   Ваш никнейм
@@ -93,27 +99,13 @@ export default function HomeScreen() {
                 />
               </div>
 
-              <div>
-                <label className="block font-[Cinzel] text-sm font-semibold text-wood-700 mb-1.5 uppercase tracking-wider">
-                  Название комнаты
-                </label>
-                <input
-                  type="text"
-                  className="fantasy-input"
-                  placeholder="Например: Встреча команды разработки"
-                  value={roomName}
-                  onChange={(e) => setRoomName(e.target.value)}
-                  required
-                />
-              </div>
-
               <button
                 type="submit"
                 className="fantasy-btn w-full flex items-center justify-center gap-2"
-                disabled={inputNick.trim().length < 2 || !roomName.trim()}
+                disabled={inputNick.trim().length < 2 || loading}
               >
                 <Plus className="w-5 h-5" />
-                Создать комнату
+                {loading ? 'Создание...' : 'Создать комнату'}
               </button>
             </form>
           )}
@@ -140,10 +132,6 @@ export default function HomeScreen() {
             </>
           )}
         </div>
-
-        <p className="text-center text-xs text-wood-600/50 mt-4 font-[Lora] italic">
-          Данные хранятся в вашем браузере
-        </p>
       </div>
     </div>
   )

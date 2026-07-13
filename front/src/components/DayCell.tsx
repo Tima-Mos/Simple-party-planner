@@ -13,7 +13,7 @@ interface DayCellProps {
 }
 
 export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday }: DayCellProps) {
-  const { nickname, toggleUserInRoom } = useRoom()
+  const { nickname, toggleDate } = useRoom()
   const [showTooltip, setShowTooltip] = useState(false)
 
   const rarity: Rarity = getRarity(users.length)
@@ -22,10 +22,15 @@ export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday 
   const isMarked = users.includes(nickname)
   const hasRarity = users.length > 0
 
+  const handleClick = () => {
+    if (!isCurrentMonth) return
+    toggleDate(dateKey)
+  }
+
   return (
     <div className="tooltip-container relative">
       <button
-        onClick={() => toggleUserInRoom(dateKey)}
+        onClick={handleClick}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         className={cn(
