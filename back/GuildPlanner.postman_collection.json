@@ -1,0 +1,93 @@
+{
+  "info": {
+    "name": "Guild Planner API",
+    "description": "REST API для календаря встреч в фэнтези-фолк стилистике",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "roomId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Create Room",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/rooms",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"nickname\": \"Арагорн\" }"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var data = pm.response.json();",
+              "pm.collectionVariables.set('roomId', data.roomId);",
+              "console.log('Room created:', data.roomId);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Join Room",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/rooms/{{roomId}}/join",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"nickname\": \"Гендальф\" }"
+        }
+      }
+    },
+    {
+      "name": "Get Calendar",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/rooms/{{roomId}}/calendar"
+      }
+    },
+    {
+      "name": "Toggle Availability",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/rooms/{{roomId}}/availability",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"nickname\": \"Арагорн\", \"date\": \"2026-07-20\" }"
+        }
+      }
+    },
+    {
+      "name": "Remove User Availability",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/rooms/{{roomId}}/availability",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"nickname\": \"Арагорн\" }"
+        }
+      }
+    },
+    {
+      "name": "Get Users",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/rooms/{{roomId}}/users"
+      }
+    }
+  ]
+}
