@@ -34,10 +34,10 @@ export const api = {
       body: JSON.stringify({ name }),
     }),
 
-  joinRoom: (roomId: string, nickname: string) =>
+  joinRoom: (roomId: string, nickname: string, rejoin = false) =>
     request<{ success: boolean; nickname: string }>(`/api/rooms/${roomId}/join`, {
       method: 'POST',
-      body: JSON.stringify({ nickname }),
+      body: JSON.stringify({ nickname, rejoin }),
     }),
 
   getCalendar: (roomId: string) =>

@@ -8,7 +8,7 @@ interface RoomContextValue {
   calendar: CalendarResponse | null
   nickname: string
   createRoom: (name: string) => Promise<string>
-  joinRoom: (roomId: string, nickname: string) => Promise<{ ok: boolean; error?: string }>
+  joinRoom: (roomId: string, nickname: string, rejoin?: boolean) => Promise<{ ok: boolean; error?: string }>
   loadCalendar: (roomId: string) => Promise<void>
   toggleDate: (date: string) => Promise<void>
   loading: boolean
@@ -46,11 +46,11 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const joinRoom = useCallback(async (id: string, nick: string) => {
+  const joinRoom = useCallback(async (id: string, nick: string, rejoin = false) => {
     setLoading(true)
     setError(null)
     try {
-      await api.joinRoom(id, nick)
+      await api.joinRoom(id, nick, rejoin)
       setRoomId(id)
       setNicknameStorage(id, nick)
       setNicknameState(nick)

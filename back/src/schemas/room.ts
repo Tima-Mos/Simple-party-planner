@@ -17,7 +17,10 @@ export const createRoomSchema = z.object({
 })
 
 export const joinRoomSchema = z.object({
-  body: nicknameSchema,
+  body: z.object({
+    nickname: nicknameSchema.shape.nickname,
+    rejoin: z.boolean().optional().default(false),
+  }),
 })
 
 export const availabilitySchema = z.object({

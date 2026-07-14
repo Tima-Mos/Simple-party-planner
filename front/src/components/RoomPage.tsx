@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useRoom } from '@/store/RoomContext'
-import { getNickname as getNicknameStorage } from '@/lib/storage'
+import { getNickname as getNicknameStorage, clearNickname as clearNicknameStorage } from '@/lib/storage'
 import { getRarity, RARITY_COLORS, formatDateKey } from '@/lib/utils'
 import CalendarGrid from './CalendarGrid'
 import UserList from './UserList'
@@ -23,7 +23,19 @@ export default function RoomPage() {
       return
     }
     const saved = getNicknameStorage(roomId)
-    if (saved) setInputNick(saved)
+    if (saved) {
+      setInputNick(saved)
+      joinRoom(roomId, saved, true).then((result) => {
+        if (result.ok) {
+          setShowNickInput(false)
+          setLoaded(true)
+        } else {
+          clearNicknameStorage(roomId)
+          setInputNick('')
+          clearError()
+        }
+      })
+    }
   }, [roomId])
 
   useEffect(() => {

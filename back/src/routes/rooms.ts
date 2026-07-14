@@ -56,11 +56,13 @@ router.post('/rooms/:roomId/join', async (req: Request, res: Response, next: Nex
     const room = await prisma.room.findUnique({ where: { id: roomId } })
     if (!room) throw new AppError(404, 'Room not found')
 
-    const existingUser = await prisma.availability.findFirst({
-      where: { roomId, nickname: body.nickname },
-    })
-    if (existingUser) {
-      throw new AppError(409, 'Этот никнейм уже занят в этой комнате')
+    if (!body.rejoin) {
+      const existingUser = await prisma.availability.findFirst({
+        where: { roomId, nickname: body.nickname },
+      })
+      if (existingUser) {
+        throw new AppError(409, 'Этот никнейм уже занят в этой комнате')
+      }
     }
 
     res.json({ success: true, nickname: body.nickname })

@@ -9,6 +9,10 @@ export function setNickname(roomId: string, nick: string): void {
   localStorage.setItem(LAST_NICK_KEY, nick)
 }
 
+export function clearNickname(roomId: string): void {
+  localStorage.removeItem(`guild_planner_nick_${roomId}`)
+}
+
 export function getLastNickname(): string | null {
   return localStorage.getItem(LAST_NICK_KEY)
 }
