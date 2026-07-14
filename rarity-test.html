@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rarity Test</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .label {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #5c3d1e;
+      text-align: center;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .cell-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rarity Test</h1>
+  <div class="grid">
+    <div class="cell-wrap">
+      <div class="day-cell rarity-common">
+        <span class="day-number">1</span>
+      </div>
+      <div class="label">Common</div>
+    </div>
+    <div class="cell-wrap">
+      <div class="day-cell rarity-uncommon">
+        <span class="day-number">2</span>
+      </div>
+      <div class="label">Uncommon</div>
+    </div>
+    <div class="cell-wrap">
+      <div class="day-cell rarity-rare">
+        <span class="day-number">3</span>
+      </div>
+      <div class="label">Rare</div>
+    </div>
+    <div class="cell-wrap">
+      <div class="day-cell rarity-epic">
+        <span class="day-number">4</span>
+      </div>
+      <div class="label">Epic</div>
+    </div>
+    <div class="cell-wrap">
+      <div class="day-cell rarity-legendary">
+        <span class="legendary-rays"></span>
+        <span class="day-number">5</span>
+        <span class="sparkle s1"></span>
+        <span class="sparkle s2"></span>
+        <span class="sparkle s3"></span>
+      </div>
+      <div class="label">Legendary</div>
+    </div>
+  </div>
+</body>
+</html>

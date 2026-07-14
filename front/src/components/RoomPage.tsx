@@ -130,13 +130,17 @@ export default function RoomPage() {
               <span className="hidden sm:inline">{copied ? 'Скопировано!' : 'Поделиться'}</span>
             </button>
           </div>
+          <p className="font-[Lora] text-base text-wood-700 mt-3 text-center">
+            Нажмите на дни, в которые вы готовы встретиться — они сразу загорятся цветом, и другие участники это увидят.
+            Чем больше людей проголосует за одну дату, тем более редкий будет цвет у ячейки.
+          </p>
         </div>
 
         {/* Rarity legend */}
         <div className="parchment-card p-3 animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
           <div className="flex flex-wrap items-center gap-2 justify-center">
             <span className="font-[Cinzel] text-xs md:text-sm text-wood-600 uppercase tracking-wider mr-1">
-              Редкость:
+              Цвет ячейки:
             </span>
             {(['common', 'uncommon', 'rare', 'epic', 'legendary'] as const).map((r) => (
               <RarityBadge key={r} rarity={r} />
