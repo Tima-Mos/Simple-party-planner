@@ -4,19 +4,19 @@ import { useRoom } from '@/store/RoomContext'
 import { Copy, Plus, DoorOpen, ScrollText } from 'lucide-react'
 
 export default function HomeScreen() {
-  const { nickname, setNickname, createRoom, loading, error } = useRoom()
-  const [inputNick, setInputNick] = useState(nickname)
+  const { createRoom, loading, error } = useRoom()
+  const [inputName, setInputName] = useState('')
   const [createdLink, setCreatedLink] = useState('')
   const [copied, setCopied] = useState(false)
   const navigate = useNavigate()
 
   const handleCreateRoom = async (e: FormEvent) => {
     e.preventDefault()
-    if (inputNick.trim().length < 2) return
+    const name = inputName.trim()
+    if (!name) return
 
-    const nick = inputNick.trim()
     try {
-      const id = await createRoom(nick)
+      const id = await createRoom(name)
       const link = `${window.location.origin}/room/${id}`
       setCreatedLink(link)
     } catch {}
@@ -86,15 +86,15 @@ export default function HomeScreen() {
 
               <div>
                 <label className="block font-[Cinzel] text-sm font-semibold text-wood-700 mb-1.5 uppercase tracking-wider">
-                  Ваш никнейм
+                  Название комнаты
                 </label>
                 <input
                   type="text"
                   className="fantasy-input"
-                  placeholder="Введите ник (мин. 2 символа)"
-                  value={inputNick}
-                  onChange={(e) => setInputNick(e.target.value)}
-                  minLength={2}
+                  placeholder="Например: Субботний рейд"
+                  value={inputName}
+                  onChange={(e) => setInputName(e.target.value)}
+                  maxLength={50}
                   required
                 />
               </div>
@@ -102,7 +102,7 @@ export default function HomeScreen() {
               <button
                 type="submit"
                 className="fantasy-btn w-full flex items-center justify-center gap-2"
-                disabled={inputNick.trim().length < 2 || loading}
+                disabled={!inputName.trim() || loading}
               >
                 <Plus className="w-5 h-5" />
                 {loading ? 'Создание...' : 'Создать комнату'}

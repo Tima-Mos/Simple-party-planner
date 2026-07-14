@@ -1,9 +1,14 @@
-const NICKNAME_KEY = 'guild_planner_nickname'
+const LAST_NICK_KEY = 'guild_planner_last_nick'
 
-export function getNickname(): string | null {
-  return localStorage.getItem(NICKNAME_KEY)
+export function getNickname(roomId: string): string | null {
+  return localStorage.getItem(`guild_planner_nick_${roomId}`)
 }
 
-export function setNickname(nick: string): void {
-  localStorage.setItem(NICKNAME_KEY, nick)
+export function setNickname(roomId: string, nick: string): void {
+  localStorage.setItem(`guild_planner_nick_${roomId}`, nick)
+  localStorage.setItem(LAST_NICK_KEY, nick)
+}
+
+export function getLastNickname(): string | null {
+  return localStorage.getItem(LAST_NICK_KEY)
 }

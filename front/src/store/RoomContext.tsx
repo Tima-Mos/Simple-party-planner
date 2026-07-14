@@ -1,42 +1,40 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 import { api, type CalendarResponse } from '@/lib/api'
-import { getNickname as getNicknameStorage, setNickname as setNicknameStorage } from '@/lib/storage'
+import { getNickname as getNicknameStorage, setNickname as setNicknameStorage, getLastNickname } from '@/lib/storage'
 
 interface RoomContextValue {
   roomId: string | null
+  roomName: string
   calendar: CalendarResponse | null
   nickname: string
-  setNickname: (n: string) => void
-  createRoom: (nickname: string) => Promise<string>
-  joinRoom: (roomId: string, nickname: string) => Promise<boolean>
+  createRoom: (name: string) => Promise<string>
+  joinRoom: (roomId: string, nickname: string) => Promise<{ ok: boolean; error?: string }>
   loadCalendar: (roomId: string) => Promise<void>
   toggleDate: (date: string) => Promise<void>
   loading: boolean
   error: string | null
+  clearError: () => void
 }
 
 const RoomContext = createContext<RoomContextValue | null>(null)
 
 export function RoomProvider({ children }: { children: ReactNode }) {
   const [roomId, setRoomId] = useState<string | null>(null)
+  const [roomName, setRoomName] = useState<string>('')
   const [calendar, setCalendar] = useState<CalendarResponse | null>(null)
-  const [nickname, setNicknameState] = useState<string>(getNicknameStorage() ?? '')
+  const [nickname, setNicknameState] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const setNickname = useCallback((n: string) => {
-    setNicknameStorage(n)
-    setNicknameState(n)
-  }, [])
+  const clearError = useCallback(() => setError(null), [])
 
-  const createRoom = useCallback(async (nick: string) => {
+  const createRoom = useCallback(async (name: string) => {
     setLoading(true)
     setError(null)
     try {
-      const res = await api.createRoom(nick)
+      const res = await api.createRoom(name)
       setRoomId(res.roomId)
-      setNicknameStorage(nick)
-      setNicknameState(nick)
+      setRoomName(res.name)
       const cal = await api.getCalendar(res.roomId)
       setCalendar(cal)
       return res.roomId
@@ -54,14 +52,16 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     try {
       await api.joinRoom(id, nick)
       setRoomId(id)
-      setNicknameStorage(nick)
+      setNicknameStorage(id, nick)
       setNicknameState(nick)
       const cal = await api.getCalendar(id)
       setCalendar(cal)
-      return true
-    } catch {
-      setError('Комната не найдена')
-      return false
+      setRoomName(cal.name)
+      return { ok: true }
+    } catch (e: any) {
+      const msg = e.message || 'Комната не найдена'
+      setError(msg)
+      return { ok: false, error: msg }
     } finally {
       setLoading(false)
     }
@@ -71,6 +71,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     try {
       const cal = await api.getCalendar(id)
       setCalendar(cal)
+      setRoomName(cal.name)
     } catch {
       setError('Не удалось загрузить календарь')
     }
@@ -93,7 +94,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
           for (const users of Object.values(newDates)) {
             for (const u of users) allUsers.add(u)
           }
-          return { dates: newDates, totalUsers: [...allUsers] }
+          return { ...prev, dates: newDates, totalUsers: [...allUsers] }
         })
       } catch (e: any) {
         setError(e.message)
@@ -104,7 +105,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
 
   return (
     <RoomContext.Provider
-      value={{ roomId, calendar, nickname, setNickname, createRoom, joinRoom, loadCalendar, toggleDate, loading, error }}
+      value={{ roomId, roomName, calendar, nickname, createRoom, joinRoom, loadCalendar, toggleDate, loading, error, clearError }}
     >
       {children}
     </RoomContext.Provider>

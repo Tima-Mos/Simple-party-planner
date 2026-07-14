@@ -11,7 +11,9 @@ export const nicknameSchema = z.object({
 })
 
 export const createRoomSchema = z.object({
-  body: nicknameSchema,
+  body: z.object({
+    name: z.string().min(1, 'Name is required').max(50, 'Name must be at most 50 characters'),
+  }),
 })
 
 export const joinRoomSchema = z.object({

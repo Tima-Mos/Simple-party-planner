@@ -9,6 +9,8 @@ import {
   subMonths,
   isSameMonth,
   isToday,
+  isBefore,
+  startOfDay,
   format,
 } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -82,6 +84,8 @@ export default function CalendarGrid({ dates }: CalendarGridProps) {
           {days.map((day) => {
             const key = formatDateKey(day)
             const users = dates[key] ?? []
+            const today = startOfDay(new Date())
+            const isPast = isBefore(day, today) && !isToday(day)
             return (
               <DayCell
                 key={key}
@@ -90,6 +94,7 @@ export default function CalendarGrid({ dates }: CalendarGridProps) {
                 users={users}
                 isCurrentMonth={isSameMonth(day, currentMonth)}
                 isToday={isToday(day)}
+                isPast={isPast}
               />
             )
           })}

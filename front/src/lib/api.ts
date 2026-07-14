@@ -12,10 +12,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export interface CreateRoomResponse {
   roomId: string
+  name: string
   shareUrl: string
 }
 
 export interface CalendarResponse {
+  name: string
   dates: Record<string, string[]>
   totalUsers: string[]
 }
@@ -26,10 +28,10 @@ export interface AvailabilityResponse {
 }
 
 export const api = {
-  createRoom: (nickname: string) =>
+  createRoom: (name: string) =>
     request<CreateRoomResponse>('/api/rooms', {
       method: 'POST',
-      body: JSON.stringify({ nickname }),
+      body: JSON.stringify({ name }),
     }),
 
   joinRoom: (roomId: string, nickname: string) =>

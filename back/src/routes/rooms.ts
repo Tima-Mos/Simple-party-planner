@@ -35,11 +35,12 @@ router.post('/rooms', async (req: Request, res: Response, next: NextFunction) =>
   try {
     const { body } = createRoomSchema.parse({ body: req.body })
     const room = await prisma.room.create({
-      data: { createdBy: body.nickname },
+      data: { name: body.name },
     })
-    logger.info('Room created', { roomId: room.id, createdBy: body.nickname })
+    logger.info('Room created', { roomId: room.id, name: room.name })
     res.status(201).json({
       roomId: room.id,
+      name: room.name,
       shareUrl: `/room/${room.id}`,
     })
   } catch (err) {
@@ -54,6 +55,14 @@ router.post('/rooms/:roomId/join', async (req: Request, res: Response, next: Nex
     const roomId = getRoomId(req)
     const room = await prisma.room.findUnique({ where: { id: roomId } })
     if (!room) throw new AppError(404, 'Room not found')
+
+    const existingUser = await prisma.availability.findFirst({
+      where: { roomId, nickname: body.nickname },
+    })
+    if (existingUser) {
+      throw new AppError(409, 'Этот никнейм уже занят в этой комнате')
+    }
+
     res.json({ success: true, nickname: body.nickname })
   } catch (err) {
     next(err)
@@ -66,6 +75,16 @@ router.get('/rooms/:roomId/calendar', async (req: Request, res: Response, next: 
     const roomId = getRoomId(req)
     const room = await prisma.room.findUnique({ where: { id: roomId } })
     if (!room) throw new AppError(404, 'Room not found')
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    await prisma.availability.deleteMany({
+      where: {
+        roomId,
+        date: { lt: today },
+      },
+    })
 
     const availabilities = await prisma.availability.findMany({
       where: { roomId },
@@ -83,6 +102,7 @@ router.get('/rooms/:roomId/calendar', async (req: Request, res: Response, next: 
     }
 
     res.json({
+      name: room.name,
       dates,
       totalUsers: Array.from(totalUsersSet),
     })

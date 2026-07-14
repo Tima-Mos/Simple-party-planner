@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useRoom } from '@/store/RoomContext'
 import { type Rarity, RARITY_COLORS, RARITY_INLINE, cn } from '@/lib/utils'
 import { getRarity } from '@/lib/utils'
-import { Moon } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 
 interface DayCellProps {
   date: Date
@@ -10,9 +10,10 @@ interface DayCellProps {
   users: string[]
   isCurrentMonth: boolean
   isToday: boolean
+  isPast: boolean
 }
 
-export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday }: DayCellProps) {
+export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday, isPast }: DayCellProps) {
   const { nickname, toggleDate } = useRoom()
   const [showTooltip, setShowTooltip] = useState(false)
 
@@ -22,32 +23,36 @@ export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday 
   const hasRarity = users.length > 0
 
   const handleClick = () => {
-    if (!isCurrentMonth) return
+    if (!isCurrentMonth || isPast) return
     toggleDate(dateKey)
   }
 
-  const rarityStyle = hasRarity ? RARITY_INLINE[rarity] : {}
+  const rarityStyle = hasRarity && !isPast ? RARITY_INLINE[rarity] : {}
 
   return (
     <div className="tooltip-container relative">
       <button
         onClick={handleClick}
-        onMouseEnter={() => setShowTooltip(true)}
+        onMouseEnter={() => !isPast && setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         className={cn(
-          'day-cell relative w-full min-h-[48px] aspect-square rounded-lg flex flex-col items-center justify-center cursor-pointer',
-          'hover:scale-105 hover:z-10',
-          !hasRarity && 'transition-transform duration-200',
-          !isCurrentMonth && 'opacity-30 pointer-events-none',
-          hasRarity ? `rarity-${rarity}` : '',
+          'day-cell relative w-full min-h-[48px] aspect-square rounded-lg flex flex-col items-center justify-center',
+          isPast ? 'cursor-default' : 'cursor-pointer hover:scale-105 hover:z-10',
+          !hasRarity && !isPast && 'transition-transform duration-200',
+          (!isCurrentMonth || isPast) && 'opacity-30 pointer-events-none',
+          hasRarity && !isPast ? `rarity-${rarity}` : '',
         )}
         style={{
           ...rarityStyle,
+          ...(isMarked ? {
+            outline: '3px solid #22c55e',
+            outlineOffset: '-3px',
+          } : {}),
           zIndex: rarity === 'legendary' ? 1 : undefined,
         }}
       >
         {isToday && (
-          <Moon className="absolute top-1 right-1 w-4 h-4 text-gold-500 z-10" />
+          <ArrowRight className="absolute top-1 right-1 w-4 h-4 text-gold-500 z-10" />
         )}
         <span
           className={cn(
@@ -56,30 +61,24 @@ export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday 
           )}
           style={
             rarity === 'legendary'
-              ? { color: '#fff', textShadow: '0 0 10px rgba(255,140,0,0.9), 0 0 20px rgba(255,100,0,0.5)', animation: 'legendary-text-pulse 2.5s ease-in-out infinite', position: 'relative', zIndex: 2 }
-              : rarity === 'epic'
-                ? { color: '#d4a0ff', textShadow: '0 0 8px rgba(163,53,238,0.6), 0 0 20px rgba(139,63,245,0.4)', animation: 'epic-text-glow 3s ease-in-out infinite', position: 'relative', zIndex: 1 }
-                : rarity === 'rare'
-                  ? { color, animation: 'rare-text-glow 3s ease-in-out infinite' }
-                  : hasRarity
-                    ? { color }
-                    : undefined
+                ? { color: '#fff', textShadow: '0 0 10px rgba(255,140,0,0.9), 0 0 20px rgba(255,100,0,0.5)', animation: 'legendary-text-pulse 2.5s ease-in-out infinite', position: 'relative', zIndex: 2 }
+                : rarity === 'epic'
+                  ? { color: '#d4a0ff', textShadow: '0 0 8px rgba(163,53,238,0.6), 0 0 20px rgba(139,63,245,0.4)', animation: 'epic-text-glow 3s ease-in-out infinite', position: 'relative', zIndex: 1 }
+                  : rarity === 'rare'
+                    ? { color, animation: 'rare-text-glow 3s ease-in-out infinite' }
+                    : hasRarity
+                      ? { color }
+                      : undefined
           }
         >
           {date.getDate()}
         </span>
-        {isMarked && (
-          <span
-            className="absolute bottom-1.5 w-2 h-2 rounded-full"
-            style={{ background: color, boxShadow: `0 0 6px ${color}` }}
-          />
-        )}
-        {users.length > 0 && !isMarked && (
+        {users.length > 0 && (
           <span className="absolute bottom-1 text-[10px] md:text-xs font-[Cinzel] font-bold" style={{ color }}>
             {users.length}
           </span>
         )}
-        {rarity === 'legendary' && (
+        {!isPast && rarity === 'legendary' && (
           <>
             <span className="legendary-rays" />
             <span className="sparkle sparkle-1" />

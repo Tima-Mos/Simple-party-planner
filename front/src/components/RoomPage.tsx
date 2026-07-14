@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useRoom } from '@/store/RoomContext'
+import { getNickname as getNicknameStorage } from '@/lib/storage'
 import { getRarity, RARITY_COLORS, formatDateKey } from '@/lib/utils'
 import CalendarGrid from './CalendarGrid'
 import UserList from './UserList'
@@ -10,8 +11,8 @@ import { ArrowLeft, Copy, ScrollText } from 'lucide-react'
 export default function RoomPage() {
   const { roomId } = useParams<{ roomId: string }>()
   const navigate = useNavigate()
-  const { calendar, nickname, joinRoom, loadCalendar, loading } = useRoom()
-  const [showNickInput, setShowNickInput] = useState(false)
+  const { calendar, roomName, nickname, joinRoom, loadCalendar, loading, error, clearError } = useRoom()
+  const [showNickInput, setShowNickInput] = useState(true)
   const [inputNick, setInputNick] = useState('')
   const [copied, setCopied] = useState(false)
   const [loaded, setLoaded] = useState(false)
@@ -21,32 +22,34 @@ export default function RoomPage() {
       navigate('/')
       return
     }
-    if (nickname) {
-      joinRoom(roomId, nickname).then((ok) => {
-        if (ok) setLoaded(true)
-        else navigate('/')
-      })
-    } else {
-      setShowNickInput(true)
-    }
+    const saved = getNicknameStorage(roomId)
+    if (saved) setInputNick(saved)
   }, [roomId])
 
-  const handleJoinWithNick = async () => {
-    if (!roomId || inputNick.trim().length < 2) return
-    const ok = await joinRoom(roomId, inputNick.trim())
-    if (ok) {
-      setShowNickInput(false)
-      setLoaded(true)
+  useEffect(() => {
+    if (roomName) {
+      document.title = `${roomName} | Guild Planner`
     } else {
-      navigate('/')
+      document.title = 'Guild Planner'
     }
-  }
+    return () => { document.title = 'Guild Planner' }
+  }, [roomName])
 
   useEffect(() => {
     if (!loaded || !roomId) return
     const interval = setInterval(() => loadCalendar(roomId), 5000)
     return () => clearInterval(interval)
   }, [loaded, roomId, loadCalendar])
+
+  const handleJoinWithNick = async () => {
+    if (!roomId || inputNick.trim().length < 2) return
+    clearError()
+    const result = await joinRoom(roomId, inputNick.trim())
+    if (result.ok) {
+      setShowNickInput(false)
+      setLoaded(true)
+    }
+  }
 
   const handleCopyLink = async () => {
     await navigator.clipboard.writeText(window.location.href)
@@ -70,6 +73,11 @@ export default function RoomPage() {
             </p>
           </div>
           <div className="space-y-4">
+            {error && (
+              <div className="p-3 rounded-lg bg-red-900/20 border border-red-800/40 text-red-300 text-sm">
+                {error}
+              </div>
+            )}
             <input
               type="text"
               className="fantasy-input"
@@ -115,7 +123,7 @@ export default function RoomPage() {
               <div className="flex items-center gap-2">
                 <ScrollText className="w-5 h-5 text-gold-500 flex-shrink-0" />
                 <h1 className="font-[Cinzel] text-lg md:text-xl font-bold text-wood-800 truncate">
-                  Комната
+                  {roomName || 'Комната'}
                 </h1>
               </div>
               <p className="font-[Lora] text-sm text-wood-600/60 mt-0.5">
