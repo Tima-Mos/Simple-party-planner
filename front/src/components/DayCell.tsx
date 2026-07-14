@@ -28,6 +28,7 @@ export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday,
   }
 
   const rarityStyle = hasRarity && !isPast ? RARITY_INLINE[rarity] : {}
+  const markColor = hasRarity ? color : '#9d9d9d'
 
   return (
     <div className="tooltip-container relative">
@@ -45,8 +46,7 @@ export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday,
         style={{
           ...rarityStyle,
           ...(isMarked ? {
-            outline: '3px solid #22c55e',
-            outlineOffset: '-3px',
+            boxShadow: `0 0 0 2px ${markColor}, 0 0 0 5px ${markColor}, ${rarityStyle.boxShadow || 'none'}`,
           } : {}),
           zIndex: rarity === 'legendary' ? 1 : undefined,
         }}

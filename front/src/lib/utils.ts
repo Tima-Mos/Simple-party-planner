@@ -34,7 +34,6 @@ export const RARITY_INLINE: Record<Rarity, React.CSSProperties> = {
     border: '2px solid rgba(23,204,0,0.3)',
     boxShadow: '0 0 8px rgba(23,204,0,0.15)',
     position: 'relative',
-    overflow: 'hidden',
   },
   rare: {
     background: 'rgba(0,112,221,0.1)',
@@ -48,7 +47,6 @@ export const RARITY_INLINE: Record<Rarity, React.CSSProperties> = {
     boxShadow: '0 0 18px rgba(163,53,238,0.5), 0 0 40px rgba(123,47,242,0.2), inset 0 0 20px rgba(163,53,238,0.2)',
     animation: 'epic-gradient 6s ease infinite, epic-border 3s ease-in-out infinite, epic-stars-twinkle 4s ease-in-out infinite',
     position: 'relative',
-    overflow: 'hidden',
   },
   legendary: {
     background: 'linear-gradient(135deg, #2a1800, #ff8c00, #ff5500, #3a2200)',
