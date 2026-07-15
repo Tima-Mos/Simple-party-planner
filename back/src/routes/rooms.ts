@@ -22,12 +22,9 @@ function isValidDateRange(dateStr: string): boolean {
   const now = new Date()
   const threeMonthsAgo = new Date(now)
   threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
-  const threeMonthsAhead = new Date(now)
-  threeMonthsAhead.setMonth(threeMonthsAhead.getMonth() + 3)
   threeMonthsAgo.setHours(0, 0, 0, 0)
-  threeMonthsAhead.setHours(0, 0, 0, 0)
   date.setHours(0, 0, 0, 0)
-  return date >= threeMonthsAgo && date <= threeMonthsAhead
+  return date >= threeMonthsAgo
 }
 
 // POST /api/rooms — create a room
@@ -123,7 +120,7 @@ router.post('/rooms/:roomId/availability', async (req: Request, res: Response, n
     if (!room) throw new AppError(404, 'Room not found')
 
     if (!isValidDateRange(body.date)) {
-      throw new AppError(400, 'Date must be within ±3 months from today')
+      throw new AppError(400, 'Date must be within 3 months in the past')
     }
 
     const dateObj = new Date(body.date)
