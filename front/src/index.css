@@ -384,3 +384,23 @@ body {
   0%, 100% { opacity: 0; transform: scale(0.3); }
   50% { opacity: 1; transform: scale(1.5); }
 }
+
+/* Marked cell double border — overrides rarity box-shadow animations */
+.day-cell.marked.rarity-uncommon {
+  box-shadow: 0 0 0 2px #17cc00, 0 0 0 5px #17cc00 !important;
+}
+.day-cell.marked.rarity-rare {
+  box-shadow: 0 0 0 2px #0070dd, 0 0 0 5px #0070dd !important;
+  animation: none !important;
+}
+.day-cell.marked.rarity-epic {
+  box-shadow: 0 0 0 2px #a335ee, 0 0 0 5px #a335ee !important;
+  animation: epic-gradient 6s ease infinite !important;
+}
+.day-cell.marked.rarity-legendary {
+  box-shadow: 0 0 0 2px #ff8c00, 0 0 0 5px #ff8c00 !important;
+  animation: legendary-gradient 6s ease infinite !important;
+}
+.day-cell.marked:not([class*="rarity-"]) {
+  box-shadow: 0 0 0 2px #9d9d9d, 0 0 0 5px #9d9d9d !important;
+}

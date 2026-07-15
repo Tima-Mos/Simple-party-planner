@@ -86,7 +86,7 @@ export default function RoomPage() {
           </div>
           <div className="space-y-4">
             {error && (
-              <div className="p-3 rounded-lg bg-red-900/20 border border-red-800/40 text-red-300 text-sm">
+              <div className="p-3 rounded-lg bg-red-900/40 border border-red-700/60 text-red-100 text-sm font-semibold">
                 {error}
               </div>
             )}

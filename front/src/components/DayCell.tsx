@@ -28,7 +28,6 @@ export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday,
   }
 
   const rarityStyle = hasRarity && !isPast ? RARITY_INLINE[rarity] : {}
-  const markColor = hasRarity ? color : '#9d9d9d'
 
   return (
     <div className="tooltip-container relative">
@@ -42,12 +41,10 @@ export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday,
           !hasRarity && !isPast && 'transition-transform duration-200',
           (!isCurrentMonth || isPast) && 'opacity-30 pointer-events-none',
           hasRarity && !isPast ? `rarity-${rarity}` : '',
+          isMarked && 'marked',
         )}
         style={{
           ...rarityStyle,
-          ...(isMarked ? {
-            boxShadow: `0 0 0 2px ${markColor}, 0 0 0 5px ${markColor}, ${rarityStyle.boxShadow || 'none'}`,
-          } : {}),
           zIndex: rarity === 'legendary' ? 1 : undefined,
         }}
       >
@@ -56,7 +53,7 @@ export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday,
         )}
         <span
           className={cn(
-            'day-number font-[Cinzel] text-base md:text-lg font-bold',
+            'day-number font-[Cinzel] text-lg md:text-xl font-bold',
             !hasRarity && (isCurrentMonth ? 'text-wood-800' : 'text-wood-600/40'),
           )}
           style={
@@ -74,7 +71,7 @@ export default function DayCell({ date, dateKey, users, isCurrentMonth, isToday,
           {date.getDate()}
         </span>
         {users.length > 0 && (
-          <span className="absolute bottom-1 text-[10px] md:text-xs font-[Cinzel] font-bold" style={{ color }}>
+          <span className="absolute bottom-1 text-xs md:text-sm font-[Cinzel] font-bold" style={{ color }}>
             {users.length}
           </span>
         )}
